@@ -16,7 +16,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
+#Bin File, and other useless directories
+/bin
+/.settings
+/playlists
 # =========================
 # Operating System Files
 # =========================

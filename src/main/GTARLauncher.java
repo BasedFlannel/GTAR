@@ -1,3 +1,4 @@
+package main;
 /**
  * @author cdiddy265
  *@version 0.1   4/22/2015
@@ -8,6 +9,7 @@ public class GTARLauncher {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		GTARFrame mainFrame = new GTARFrame();
-		GTARConfigParser gtcp = new GTARConfigParser();	
+		GTARConfigParser gtcp = new GTARConfigParser();
+		GTARPlaylist testlist = new GTARPlaylist("\\playlists\\gtav\\list1");
 	}
 }
