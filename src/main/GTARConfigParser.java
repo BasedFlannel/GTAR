@@ -1,26 +1,40 @@
 package main;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
 public class GTARConfigParser {
-	private String path;
+	private File path;
 	/**
 	 * Creates a new GTARConfigParser
 	 * default path is Config/config.properties
 	 */
 	public GTARConfigParser(){
-		this("Config/config.properties");
+		this("\\config\\config.properties");
 	}	
 	/**
 	 * Creates a new GTARConfigParser
 	 * @param filePath the file this GTARConfigParser should read.
 	 */
 	public GTARConfigParser(String filePath){
-		super();
-		path =filePath;
+		path = new File(System.getProperty("user.dir")+filePath);
+		if(!path.isFile())
+			try {
+				System.out.println(path.toString() + " does not exist, creating.");
+				String pathString = this.path.toString();
+				File prefile = new File(pathString.substring(0,pathString.lastIndexOf('\\')));
+				if(prefile.toString()!="")
+					prefile.mkdirs();
+				path.createNewFile();
+			} catch (IOException e) {
+				System.out.println("creation of "+path.toString()+" failed.");
+				e.printStackTrace();
+			}
 	}
 	
 	/**
@@ -44,17 +58,12 @@ public class GTARConfigParser {
 		Properties prop = new Properties();
 
  
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(this.path);
- 
-		if (inputStream != null) {
-			prop.load(inputStream);
-		} else {
-			throw new FileNotFoundException("property file '" + this.path + "' not found in the classpath");
-		}
+		BufferedReader inputReader = new BufferedReader(new FileReader(this.path));
+		prop.load(inputReader);
 
 		// get the property value and print it out
 		result = prop.getProperty(property);
-		inputStream.close();
+		inputReader.close();
 		return result;
 	}
 	
@@ -74,22 +83,19 @@ public class GTARConfigParser {
 		} 
 		return returnList;
 	}
+	
 	//actual getpropertiesvalues method
 	private ArrayList<String> getPropertiesValues() throws IOException{
 		Properties prop = new Properties();
- 
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(this.path);
- 
-		if (inputStream != null) {
-			prop.load(inputStream);
-		} else {
-			throw new FileNotFoundException("property file '" + this.path + "' not found in the classpath");
-		}
+		
+		BufferedReader inputReader = new BufferedReader(new FileReader(this.path));
+		prop.load(inputReader);
+		
 		ArrayList<String> list = new ArrayList<String>();
 		for (Object k : prop.keySet()){
 			list.add((String)k);
 		}
-		inputStream.close();
+		inputReader.close();
 		return list;
 	}
 }

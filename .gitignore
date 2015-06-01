@@ -18,8 +18,11 @@ $RECYCLE.BIN/
 *.lnk
 #Bin File, and other useless directories
 /bin
+/bin/*
 /.settings
-/playlists
+/.settings/*
+/games
+/games/*
 # =========================
 # Operating System Files
 # =========================

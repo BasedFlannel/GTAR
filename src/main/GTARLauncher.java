@@ -1,7 +1,7 @@
 package main;
 /**
  * @author cdiddy265
- *@version 0.1   4/22/2015
+ *@version 0.2   5/31/2015
  *GTAR is an application for moving files from one place to another.
  *At the moment, it is used for changing out the songs in the personal radio in GTA.
  */
@@ -9,7 +9,6 @@ public class GTARLauncher {
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		GTARFrame mainFrame = new GTARFrame();
-		GTARConfigParser gtcp = new GTARConfigParser();
-		GTARPlaylist testlist = new GTARPlaylist("\\playlists\\gtav\\list1");
+		mainFrame.printGameRegistry();
 	}
 }

@@ -19,11 +19,18 @@ import javax.swing.event.ListSelectionListener;
 
 public class GTARFrame extends JFrame {
 	private static final long serialVersionUID = 7736399725583414552L;
+	private GTARGameRegistry gameRegistry;
+	private GTARGame activeGame;
+	
 	/**
 	 * This is the primary panel the entire GUI is based off of.
 	 */
 	public GTARFrame(){
 		super();
+		//Setting up Game Registry and active game.
+		this.gameRegistry = new GTARGameRegistry();
+		this.activeGame=gameRegistry.getGame(0);
+		
 		
 		/**Content Panel and GridBag*/
 		//homePanel is the default content panel
@@ -112,26 +119,28 @@ public class GTARFrame extends JFrame {
 		
 		//Games Menu Items declaration
 		JMenuItem menuGamesGameSwitchItem = new JMenu("Switch");
-		/**/JRadioButtonMenuItem game;
-		/**/ButtonGroup switchGameBtnGroup = new ButtonGroup();
+		JRadioButtonMenuItem game;
+		ButtonGroup switchGameBtnGroup = new ButtonGroup();
 		GTARMenuItem menuGamesAddGameItem = new GTARMenuItem("Add Game");
 		
-		/**
-		 * Will eventually be replaced with code to read a file full of destination paths, and load those into the games Menu.
-		 */
-		ArrayList<String> tempGames = new ArrayList<String>();
-		tempGames.add("g1");
-		tempGames.add("g2");
-		tempGames.add("g3");
-		tempGames.add("g4");
-		tempGames.add("g5");
-		tempGames.add("g6");
-		for(String str:tempGames){
-			game = new JRadioButtonMenuItem(str);
+		if(this.getGameRegistry().count()==0){
+			game = new JRadioButtonMenuItem("New Game");
 			switchGameBtnGroup.add(game);
+			game.setSelected(true);
 			menuGamesGameSwitchItem.add(game);
 		}
-		
+		else{
+			boolean first=true;
+			for(GTARGame g:this.getGameRegistry().getGames()){
+				game = new JRadioButtonMenuItem(g.getName());
+				if(first){
+					game.setSelected(true);
+					first=false;
+				}
+				switchGameBtnGroup.add(game);
+				menuGamesGameSwitchItem.add(game);
+			}
+		}
 		//now for the work
 		//Constructing the menu bar up top
 		//start with adding submenus to menus
@@ -157,5 +166,15 @@ public class GTARFrame extends JFrame {
 		gbc.ipadx=0;
 		gbc.ipady=0;
 		gbc.anchor=gbc.CENTER;
+	}
+	
+	private GTARGameRegistry getGameRegistry(){
+		return this.gameRegistry;
+	}
+	public GTARGameRegistry TEMPORARYgetGameRegistry(){
+		return this.gameRegistry;
+	}
+	public void printGameRegistry(){
+		System.out.println(this.getGameRegistry().toString());
 	}
 }
