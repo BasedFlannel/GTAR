@@ -2,7 +2,8 @@ package main;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -13,23 +14,25 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-public class GTARFrame extends JFrame {
+public class GTARFrame extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 7736399725583414552L;
 	private GTARGameRegistry gameRegistry;
-	private GTARGame activeGame;
+	private JList listPlaylists, listContent, listInfo;
 	
 	/**
 	 * This is the primary panel the entire GUI is based off of.
 	 */
+	
 	public GTARFrame(){
 		super();
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//Setting up Game Registry and active game.
 		this.gameRegistry = new GTARGameRegistry();
-		this.activeGame=gameRegistry.getGame(0);
 		
 		
 		/**Content Panel and GridBag*/
@@ -45,6 +48,7 @@ public class GTARFrame extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		populateMenuBar(menuBar);
 		this.setJMenuBar(menuBar);
+		
 		/**Labels*/
 		JLabel lblSelectPlaylist = new JLabel("Select Playlist");
 		JLabel lblPlaylistContents = new JLabel("Playlist Contents");
@@ -54,10 +58,10 @@ public class GTARFrame extends JFrame {
 		JButton btnAddPlaylist = new JButton("Add Playlist");
 		
 		/**JLists*/
-		JList listPlaylists = new JList();
-		
-		JList listContent = new JList();
-		JList listInfo = new JList();
+		//Set as globals above so the action listener can always access them.
+		listPlaylists = new JList();
+		listContent = new JList();
+		listInfo = new JList();
 		
 		//List Action Listeners
 		listPlaylists.addListSelectionListener(new ListSelectionListener(){
@@ -112,19 +116,26 @@ public class GTARFrame extends JFrame {
 		JMenu menuGames = new JMenu("Game");
 		
 		//Files Menu Items declaration
-		JMenuItem menuFilesRescanItem = new JMenuItem("Rescan for playlists");
+		JMenuItem menuFilesRescanItem = new JMenuItem("Rescan for playlists"); 
+		menuFilesRescanItem.setActionCommand("rescanPlaylists");
+		menuFilesRescanItem.addActionListener(this);
 		
 		//Options Menu Items declaration
 		JMenuItem menuOptionsResetItem = new JMenuItem("ResetAll");
+		menuOptionsResetItem.addActionListener(this);
+		menuOptionsResetItem.setActionCommand("ResetAll");
 		
 		//Games Menu Items declaration
 		JMenuItem menuGamesGameSwitchItem = new JMenu("Switch");
 		JRadioButtonMenuItem game;
 		ButtonGroup switchGameBtnGroup = new ButtonGroup();
 		GTARMenuItem menuGamesAddGameItem = new GTARMenuItem("Add Game");
+		menuGamesAddGameItem.setActionCommand("AddNewGame");
+		menuGamesAddGameItem.addActionListener(this);
 		
 		if(this.getGameRegistry().count()==0){
-			game = new JRadioButtonMenuItem("New Game");
+			game = new JRadioButtonMenuItem("Add Game");
+			game.setActionCommand("AddNewGame");
 			switchGameBtnGroup.add(game);
 			game.setSelected(true);
 			menuGamesGameSwitchItem.add(game);
@@ -135,12 +146,16 @@ public class GTARFrame extends JFrame {
 				game = new JRadioButtonMenuItem(g.getName());
 				if(first){
 					game.setSelected(true);
-					first=false;
+					first = false;
 				}
+				game.addActionListener(this);
+				game.setActionCommand("ChangeGame_-_"+g.getName());
 				switchGameBtnGroup.add(game);
 				menuGamesGameSwitchItem.add(game);
+				
 			}
 		}
+
 		//now for the work
 		//Constructing the menu bar up top
 		//start with adding submenus to menus
@@ -168,13 +183,54 @@ public class GTARFrame extends JFrame {
 		gbc.anchor=gbc.CENTER;
 	}
 	
-	private GTARGameRegistry getGameRegistry(){
-		return this.gameRegistry;
-	}
-	public GTARGameRegistry TEMPORARYgetGameRegistry(){
+	public GTARGameRegistry getGameRegistry(){
 		return this.gameRegistry;
 	}
 	public void printGameRegistry(){
-		System.out.println(this.getGameRegistry().toString());
+		System.out.println(this.getGameRegistry());
 	}
+	public JList getPlaylistList(){
+		return this.listPlaylists;
+	}
+	public JList getContentList(){
+		return this.listContent;
+	}
+	public JList getInfoList(){
+		return this.listInfo;
+	}
+	/**
+	 * Method to actually process commands from buttons.
+	 * @param e
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String command = e.getActionCommand();
+		if(command.startsWith("ChangeGame_-_")){
+			this.gameRegistry.setActiveGame(command.substring(command.indexOf("_-_")+3));
+			System.out.println("Game changed to " + this.gameRegistry.getActiveGame().getName());
+			this.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "RefreshLists"));//refresh listboxes
+		}
+		else if("RefreshLists".equals(command)){
+			this.getPlaylistList().repaint();
+			this.getContentList().repaint();
+			this.getInfoList().repaint();
+			System.out.println("Refreshed Listboxes");
+		}
+		else if("rescanPlaylists".equals(command)){
+			this.gameRegistry.getActiveGame().rescan();
+			System.out.println("Rescan complete for "+this.getGameRegistry().getActiveGame().getName());
+			this.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "RefreshLists"));//refresh listboxes
+		}
+		else if ("ResetAll".equals(command)){
+			System.out.println("Reset all goes here.");
+			this.getGameRegistry().setActiveGame(0);
+			this.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "RefreshLists"));//refresh listboxes
+		}
+		else if ("AddNewGame".equals(command)){
+			System.out.println("Add new game dialog here");
+		}
+		
+		
+	}
+	
 }

@@ -2,8 +2,6 @@ package main;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GTARGameRegistry {
 	private ArrayList<GTARGame> gameRegistry;
@@ -57,13 +55,23 @@ public class GTARGameRegistry {
 		else
 			System.out.println("incorrect nunmber\n Registry size: " + this.gameRegistry.size()+"\nRequested index: "+index+"\nActive game shall remain as "+this.activeGame);
 	}
-
+	public void setActiveGame(String title){
+		boolean switched = false;
+		for(int i = 0; i< this.gameRegistry.size(); i++){
+			if(this.getGame(i).getName().equals(title)){
+				this.setActiveGame(i);
+				switched=true;
+				break;
+			}
+		}
+		if(!switched)
+			System.out.println("\nRequested game: '"+title+"' not found.\nActive game shall remain as "+this.activeGame);
+	}
 	public GTARGame getGame(int i) {
 		try{
 			return this.gameRegistry.get(i);
 		}catch(Exception e){
 			System.out.println("No game in index "+i);
-			e.printStackTrace();
 			return null;
 		}
 	}

@@ -24,6 +24,9 @@ public class GTARGame {
 	public String getName(){
 		return this.name;
 	}
+	public String toString(){
+		return this.name;
+	}
 	public String toStringf(){
 		String output="\t"+name+":\n\n";
 		for(GTARPlaylist g : playlistRegistry)
@@ -31,4 +34,22 @@ public class GTARGame {
 		
 		return output+"\t--------------------------\n";
 	}
+	
+	/**
+	 * Method to rescan a game's directory for new playlists.
+	 * In the future, this will be updated to first check for changes, then re-initialize everything if there's changes.
+	 */
+	public void rescan(){
+		playlistRegistry = new ArrayList<GTARPlaylist>();
+		
+		//Lists subdirectories into an array, then makes a new Playlist of each and puts it in the registry.
+		String[] names = gameDirectory.list();
+		File f = new File("");
+		for(String name : names){
+			f=new File(gameDirectory.toString()+"\\"+name);
+			if(f.isDirectory())
+				playlistRegistry.add(new GTARPlaylist(f));	
+		}
+	}
+	
 }

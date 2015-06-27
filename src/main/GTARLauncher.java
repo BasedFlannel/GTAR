@@ -6,9 +6,8 @@ package main;
  *At the moment, it is used for changing out the songs in the personal radio in GTA.
  */
 public class GTARLauncher {
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		GTARFrame mainFrame = new GTARFrame();
-		mainFrame.printGameRegistry();
+		//mainFrame.printGameRegistry();
 	}
 }
